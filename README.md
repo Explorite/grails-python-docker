@@ -1,79 +1,68 @@
-# Optimized Grails Container #
+#Grails Container
 
-Docker image that will bootstrap an environment for running a Grails application using Docker optimized base images. By default, it will run the Grails app using the `prod run-app` (or `prod run-war` for Grails 2) directive which is the most optimized way of running Grails for production environments. However, you can easily change the default behaviour for your specific uses (see the _Changing Behaviour_ section for more details on this).
+This docker image includes Java 8 and Grails 3.2.8 for use in developing Grails applications (with the Grails cli as the endpoint).
 
-## Technologies / Versions Used
-- Grails 3.2.8 (by default; all versions from `2.0.0` up to `3.2.8` can be specified) 
-- Java JDK 7+ (for Grails 2) or 8+ (for Grails 3)
-- Tomcat 7+ (for Grails 2) or 8+ (for Grails 3)
+## Usage
 
-## Running Using Defaults ##
-By default, the container will start inside Grails interactive mode. From here, you can run the app by simply typing `run-app` or execute any other valid Grails commands you may want to. 
+### Default Behavior
+By defaut, running this image without any command will run `grails -version` in the /app directory. Thus, you should mount your project in /app. For example, a more interesting command would be test-running your app.
 
-Use the following command to run on default mode (remember to ALWAYS specify your app folder in the `-v` command):
+```bash
+# For files on the dockerhost
+docker run --rm -v /path/to/your/project:/app:rw -p 80:8080 --name grails explorite/grails3-python grails run-app
 
-`docker run --rm -v /path/to/your/project:/app:rw -p 80:8080 --name grails mozart/grails` 
-
-> Note: This command will run the Grails container using the latest stable version of Grails 3. 
-
-This default behavior can be altered by using the _tag_ modifier for specifying the Grails image version (see the _Image Tag_ version), by modifying the command when running the image (see the _Run Command_ version) or by editing the default environment variables (see the _Environment Variables_ section). 
-
-## Changing Behavior 
-You can change the default behavior of the image by either changing some environment variables or executing a command rather than entering the default Grails interactive mode.
-
-### Image Tag / Version
-You can change the default behaviour of the image when building and running it by specifying a different Grails image version using the _tag_ (e.g.:`{repository}/{imageName}:{tag}`) modifier at the end of the image identifier (e.g.: `docker run --rm -v /path/to/your/project:/app:rw -p 80:8080 --name grails mozart/grails:2`)
-
-### Environment Variables 
-The image contains the following customizable Grails related environment variables that can be changed inside the image's Dockerfile.
-
- - `GRAILS_VERSION`: Specifies the version of Grails to download (default: `3.2.8`; min: `2.0.0`; max: `3.2.8`).
-
-> **IMPORTANT:** When using the `GRAILS_VERSION` env var to specify a version less than `3.0.0` you MUST use the image version tag with a value of `2` (e.g.: mozart/grails:2). If not, image building will fail!
-
-### Run Command 
-You can execute a different Grails command rather than the interactive mode that is run by default, by specifying the command after the `mozart/grails` image name in the following form: ` {grails-command}`. For example:
-
-`docker run --rm -v /path/to/your/project:/app:rw -p 80:8080 --name grails mozart/grails:3 run-app`
-
-## Building the Image 
-You can build the image by yourself by executing:
-
-`docker build https://raw.githubusercontent.com/mozart-analytics/grails-docker/master/grails-3/Dockerfile`
-
-Or by downloading directly from the registry:
-
-`docker pull explorite/grails:{version|latest}`
-
-## Extra: How to use for your Grails apps 
-You can also leverage the use of this image for your internal apps if you want more freedom of customization and speed of initialization. To do this: 
-
- 1. Create a Dockerfile for your app.
- 2. Use this image as the `FROM:` image of your app's Dockerfile.
- 3. Put your app's Dockerfile on the root of the app's folder.
- 4. Build your image using your own custom Dockerfile.
-
-An example of a Dockerfile for a Grails-Hello-World app could be:
-
-### For Grails 3:
+# For a data container
+docker run --rm --link data-container-name:data -p 80:8080 --name grails explorite/grails3-python grails run-app
 ```
-FROM mozart/grails:3
-MAINTAINER Manuel Ortiz Bey <ortiz.manuel@mozartanalytics.com>
 
-# Copy App files
-COPY . /app
+### Versatility
+Of course, you can use any command here, and take notice that `grails` is the entrypoint. So, to create an application, run the following:
 
-# Run Grails dependency-report command to pre-download dependencies but not 
-# create unnecessary build files or artifacts.
-RUN grails dependency-report
+```bash
+docker run --rm -v /path/to/dir:/app:rw --name grails explorite/grails3-python create-app helloworld
+```
 
-# Set Default Behavior
+### Interactive Mode
+Downloading a whole bunch of things each time you run the container is a pain -- not to mention a huuge bandwidth sink ( for everyone else stuck in 1995 internet with me ). A nice feature of Grails is its interactive mode. Also useful if you find yourself starting a grails container frequently, you can set the docker switches -i and -t and the grails switch `--interactive` (see example). This overrides the default CMD (`-version`) if you didn't change it.
+
+```bash
+docker run -it --rm -v /path/to/project:/app:rw --name grails explorite/grails3-python --interactive
+```
+
+### Building On This Container
+
+Obviously, `grails -version` is not a very interesting command. So, when want to customize or get annoyed with changing your project's user and group, you can build off of this image and tweak all the settings, install more packages, etc:
+
+```bash
+FROM explorite/grails3-python
+MAINTAINER your-name-here <email@you.com>
+
+# In case someone loses the Dockerfile
+RUN rm -rf /etc/Dockerfile
+ADD Dockerfile /etc/Dockerfile
+
+# Add your desired user and group
+RUN groupadd your-group-name
+RUN useradd -s /bin/bash -m -d /app -g your-group-name your-user-name
+
+# Set your desired user as default
+USER your-user-name
+
+# Whatever default behavior you want
 ENTRYPOINT ["grails"]
-CMD ["run"]
+CMD ["run-app"]
 ```
-## References
- - More info about [phusion/baseimage](https://github.com/phusion/baseimage-docker).
- - More info about [Grails](https://grails.org/).
 
-## Credits ##
-This image was inspired by the [niaquinto/grails](https://registry.hub.docker.com/u/niaquinto/grails/) image available in the Docker Registry Hub.
+## Get the Image
+
+To build this image yourself, run...
+ 
+```bash
+docker build github.com/explorite/grails-python-docker
+```
+
+Or, you can pull the image from the central docker repository by using... 
+
+```bash
+docker pull explorite/grails3-python
+```
