@@ -18,9 +18,6 @@ RUN apt-get update
 RUN apt-get install -y python-pip
 RUN apt-get install -y python3
 RUN pip install boto3==1.3.0
-RUN pip install awscli --upgrade
-RUN npm install
-RUN npm install -g gulp
 
 # Create App Directory
 RUN mkdir /app
