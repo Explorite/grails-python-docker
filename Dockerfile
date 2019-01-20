@@ -2,7 +2,7 @@ FROM java:8
 MAINTAINER Adi Pellumbi <adi.pellumbi@explorite.com>
 
 # Install Grails
-ENV GRAILS_VERSION 3.2.8
+ENV GRAILS_VERSION 3.1.10
 WORKDIR /usr/lib/jvm
 RUN wget https://github.com/grails/grails-core/releases/download/v$GRAILS_VERSION/grails-$GRAILS_VERSION.zip && \
     unzip grails-$GRAILS_VERSION.zip && \
