@@ -1,6 +1,6 @@
 # Grails Container
 
-This docker image includes Java 8, Grails 3.2.8 & Python 3 for use in developing Grails applications (with the Grails cli as the endpoint).
+This docker image includes Java 8, Grails 3.2.3 & Python 3 for use in developing Grails applications (with the Grails cli as the endpoint).
 
 ## Usage
 
