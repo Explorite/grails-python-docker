@@ -2,7 +2,7 @@ FROM java:8
 MAINTAINER Adi Pellumbi <adi.pellumbi@explorite.com>
 
 # Set Default Grails version
-ENV GRAILS_VERSION 3.2.3
+ENV GRAILS_VERSION 3.2.8
 
 # Install Grails
 WORKDIR /usr/lib/jvm
