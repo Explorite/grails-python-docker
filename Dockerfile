@@ -1,8 +1,10 @@
 FROM java:8
 MAINTAINER Adi Pellumbi <adi.pellumbi@explorite.com>
 
-# Install Grails
+# Set Default Grails version
 ENV GRAILS_VERSION 3.2.3
+
+# Install Grails
 WORKDIR /usr/lib/jvm
 RUN wget https://github.com/grails/grails-core/releases/download/v$GRAILS_VERSION/grails-$GRAILS_VERSION.zip && \
     unzip grails-$GRAILS_VERSION.zip && \
