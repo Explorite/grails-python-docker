@@ -1,4 +1,4 @@
-FROM java:8
+FROM rtfpessoa/ubuntu-jdk8
 MAINTAINER Adi Pellumbi <adi.pellumbi@explorite.com>
 
 # Set Default Grails version
