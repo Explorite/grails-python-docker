@@ -27,5 +27,9 @@ RUN mkdir /app
 # Set Workdir
 WORKDIR /app
 
+# Pre-download dependencies but not 
+# create unnecessary build files or artifacts.
+RUN ./gradlew clean
+
 # Set Default Behavior
 ENTRYPOINT ["grails"]
